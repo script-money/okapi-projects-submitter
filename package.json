@@ -1,0 +1,22 @@
+{
+  "name": "okapi-projects-wraper",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "convert": "bun run src/convert.ts",
+    "test": "bunx playwright test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.40.1",
+    "@types/json2csv": "^5.0.7",
+    "json2csv": "^6.0.0-alpha.2",
+    "playwright": "latest"
+  }
+}
