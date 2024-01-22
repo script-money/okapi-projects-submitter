@@ -1,0 +1,18 @@
+{
+  "logoSrc": "https://www.rootdata.com/_ipx/f_webp/https://rdbk.rootdata.com/uploads/public/b6/1668056830261.jpg",
+  "nameText": "StarkNet",
+  "detailIntroText": "StarkNet is a permissionless, decentralized Validity-Rollup (also known as a \"ZK-Rollup\"). It operates as an L2 network over Ethereum, enabling any dApp to achieve unlimited scalability for its computations without compromising Ethereum's composability and security. This is possible due to StarkNet's reliance on the safest and most scalable cryptographic proof system: STARK.",
+  "introduceText": "decentralized ZK-Rollup",
+  "officialLink": "https://starknet.io/",
+  "twitterLink": "https://twitter.com/Starknet",
+  "twitterLogoLink": "https://pbs.twimg.com/profile_images/1656626805816565763/WyFDMG6u_normal.png",
+  "discordLink": "https://starknet.io/discord",
+  "discordServerId": "793094838509764618",
+  "telegramLink": "",
+  "cmcLink": "",
+  "ecosystem": "1: \"Ethereum\",73: \"StarkNet\",",
+  "categories": "9: \"Infrastructure\",",
+  "tokenContractAddress": "",
+  "nftContractAddress": "",
+  "communityNftContractAddress": ""
+}

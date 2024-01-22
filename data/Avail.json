@@ -1,0 +1,18 @@
+{
+  "logoSrc": "https://www.rootdata.com/_ipx/f_webp/https://rdbk.rootdata.com/uploads/public/b6/1691170018426.png",
+  "nameText": "Avail",
+  "detailIntroText": "Avail is a blockchain that is laser-focused on data availability: ordering and recording blockchain transactions, and making it possible to prove that block data is available without downloading the entire block. This allows it to scale in ways that monolithic blockchains cannot. Off-chain scaling solutions can unlock their full potential by offloading data availability to Avail. Standalone chains can bootstrap validator security by leveraging Avail for data availability.",
+  "introduceText": "Modular blockchain focused on data availability",
+  "officialLink": "https://www.availproject.org/",
+  "twitterLink": "https://twitter.com/AvailProject",
+  "twitterLogoLink": "https://pbs.twimg.com/profile_images/1671126588694609920/THQgYJtf_normal.png",
+  "discordLink": "https://discord.gg/y6fHnxZQX8",
+  "discordServerId": "1065831819154563132",
+  "telegramLink": "",
+  "cmcLink": "",
+  "ecosystem": "1: \"Ethereum\",",
+  "categories": "9: \"Infrastructure\",",
+  "tokenContractAddress": "",
+  "nftContractAddress": "",
+  "communityNftContractAddress": ""
+}

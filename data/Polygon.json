@@ -1,0 +1,18 @@
+{
+  "logoSrc": "https://www.rootdata.com/_ipx/f_webp/https://rdbk.rootdata.com/uploads/public/b16/1666510861240.jpg",
+  "nameText": "Polygon",
+  "detailIntroText": "Polygon is a decentralized Ethereum scaling platform that enables developers to build user-friendly, scalable dApps with low transaction fees without compromising security.",
+  "introduceText": "Decentralised Ethereum scaling platform",
+  "officialLink": "https://polygon.technology/",
+  "twitterLink": "https://twitter.com/0xPolygon",
+  "twitterLogoLink": "https://pbs.twimg.com/profile_images/1639270979288399876/3OT3Lsux_normal.jpg",
+  "discordLink": "https://discord.gg/tCmCbEff66",
+  "discordServerId": "635865020172861441",
+  "telegramLink": "https://t.me/polygonofficial",
+  "cmcLink": "https://coinmarketcap.com/currencies/polygon/",
+  "ecosystem": "4: \"Polygon\",",
+  "categories": "9: \"Infrastructure\",",
+  "tokenContractAddress": "",
+  "nftContractAddress": "",
+  "communityNftContractAddress": ""
+}

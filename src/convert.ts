@@ -2,22 +2,12 @@ import * as fs from "fs";
 import * as path from "path";
 import { parse } from "json2csv";
 
-const fileNames = [
-  "BloodLoop",
-  "Golden Tides",
-  "Moonveil Entertainment",
-  "Otherside",
-  "SkyArk Chronicles",
-  "Star Atlas",
-];
-
 const getJsonFiles = (jsonPath: string): string[] => {
   let jsonFiles: string[] = [];
   const files = fs.readdirSync(jsonPath);
   files.forEach((item) => {
     console.log(item);
 
-    if (!fileNames.includes(item.split(".")[0])) return;
     const fPath = path.join(jsonPath, item);
     const stat = fs.statSync(fPath);
     if (stat.isDirectory() === true) {
@@ -42,7 +32,7 @@ const readJsonFiles = (jsonFiles: string[]): any[] => {
       discordLink: json.discordLink,
       telegramLink: json.telegramLink,
       cmcLink: json.cmcLink,
-      introduceText: json.introduceText,
+      introduceText: json.introduceText, // TODO: every word should be UpperCase first
       detailIntroText: json.detailIntroText,
       categories: json.categories,
       ecosystem: json.ecosystem,

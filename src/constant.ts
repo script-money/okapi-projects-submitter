@@ -76,6 +76,10 @@ export const chain: { [key: number]: string } = {
   75: "Nodle Network",
   76: "opBNB",
   77: "StarkEx",
+  78: "Monad",
+  79: "Chiliz",
+  80: "Chromia",
+  81: "Root Network",
 };
 
 export const category: { [key: number]: string } = {
@@ -104,4 +108,8 @@ export const categoryMapping: { [key: string]: number } = {
   "AAA Games": 3,
   Metaverse: 6,
   NFT: 2,
+  Infra: 9,
+  Layer1: 9,
+  Layer2: 9,
+  "Modular Blockchain": 9,
 };

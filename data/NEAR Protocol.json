@@ -1,0 +1,18 @@
+{
+  "logoSrc": "https://www.rootdata.com/_ipx/f_webp/https://rdbk.rootdata.com/uploads/public/b16/1666538476533.jpg",
+  "nameText": "NEAR Protocol",
+  "detailIntroText": "NEAR is a sharded, proof-of-stake, layer-one blockchain that aims to incentivize a network of computers to operate a platform for developers to create and launch decentralized applications. Central to its design is the concept of sharding, a process that splits the network's infrastructure into several segments so that nodes only have to handle a fraction of the network's transactions. The NEAR mainnet went live in August 2020.",
+  "introduceText": "Layer-one blockchain",
+  "officialLink": "https://near.org/",
+  "twitterLink": "https://twitter.com/NEARProtocol",
+  "twitterLogoLink": "https://pbs.twimg.com/profile_images/1631021064171196431/_ahCp9jR_normal.jpg",
+  "discordLink": "https://discord.com/invite/zfhfRpaM4m",
+  "discordServerId": "490367152054992913",
+  "telegramLink": "https://t.me/cryptonear",
+  "cmcLink": "https://coinmarketcap.com/currencies/near-protocol/",
+  "ecosystem": "51: \"NEAR\",",
+  "categories": "9: \"Infrastructure\",",
+  "tokenContractAddress": "",
+  "nftContractAddress": "",
+  "communityNftContractAddress": ""
+}

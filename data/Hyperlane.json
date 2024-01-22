@@ -1,0 +1,18 @@
+{
+  "logoSrc": "https://www.rootdata.com/_ipx/f_webp/https://rdbk.rootdata.com/uploads/public/b19/1666613165814.jpg",
+  "nameText": "Hyperlane",
+  "detailIntroText": "Hyperlane is the platform for developers building the interchain universe. It provides an on-chain API for sending information between blockchains. Developers can use Hyperlane as an API to easily and securely communicate between blockchains, or they can utilize the Hyperlane SDK and tooling to quickly build interchain applications.",
+  "introduceText": "Cross-chain messaging protocol",
+  "officialLink": "https://www.hyperlane.xyz/",
+  "twitterLink": "https://twitter.com/hyperlane_xyz",
+  "twitterLogoLink": "https://pbs.twimg.com/profile_images/1671589406816313345/wGzRPeEf_normal.jpg",
+  "discordLink": "https://discord.com/invite/VK9ZUy3aTV",
+  "discordServerId": "935678348330434570",
+  "telegramLink": "",
+  "cmcLink": "",
+  "ecosystem": "1: \"Ethereum\", 4: \"Polygon\", 2: \"BSC\", 7: \"Avalanche\", 5: \"Arbitrum\", 6: \"Optimism\", 59: \"Celo\",",
+  "categories": "9: \"Infrastructure\",",
+  "tokenContractAddress": "",
+  "nftContractAddress": "",
+  "communityNftContractAddress": ""
+}

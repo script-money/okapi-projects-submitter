@@ -208,6 +208,14 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
         const data = resJson.data[key];
+        if (
+          data == null ||
+          data.platform == null ||
+          data.platform.token_address == null
+        ) {
+          // TODO: failed parse CMC for https://www.rootdata.com/Projects/detail/Cardano?k=NTA%3D
+          continue;
+        }
         const tokenAddress = data.platform.token_address;
         const chain = data.platform.slug;
         const symbol = data.symbol;
