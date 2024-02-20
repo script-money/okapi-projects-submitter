@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "start": "bun run src/index.ts",
+    "search": "bun run src/search.ts",
+    "create": "bun run src/create.ts",
     "convert": "bun run src/convert.ts",
     "test": "bunx playwright test"
   },

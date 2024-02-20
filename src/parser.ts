@@ -1,50 +1,6 @@
 import { chromium, type Browser, type Page } from "playwright";
 import { category, categoryMapping, chain } from "./constant";
-
-interface PageInfo {
-  nameText: string;
-  officialLink: string;
-  logoSrc: string;
-  detailIntroText: string;
-  introduceText: string;
-  twitterLink?: string;
-  twitterLogoLink?: string;
-  discordLink?: string;
-  discordServerId?: string;
-  telegramLink?: string;
-  cmcLink?: string;
-  ecosystem: string;
-  categories: string;
-  tokenContractAddress?: string;
-  nftContractAddress?: string;
-  communityNftContractAddress?: string;
-  userContractAddressWebsite?: string;
-  protocolContractAddresses?: string;
-}
-
-interface twitterBaseInfo {
-  data: {
-    user: {
-      result: {
-        legacy: {
-          profile_image_url_https: string;
-        };
-      };
-    };
-  };
-}
-
-interface cmcBaseInfo {
-  data: {
-    [key: string]: {
-      platform: {
-        token_address: string;
-        slug: string;
-      };
-      symbol: string;
-    };
-  };
-}
+import type { PageInfo, cmcBaseInfo, twitterBaseInfo } from "./interface";
 
 async function fetchPageInfo(url: string): Promise<PageInfo> {
   let browser: Browser | null = null;
@@ -63,10 +19,15 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
 
     const logoSrc = await baseInfoDiv.$eval("img.logo", (img) => img.src);
     const nameText = await baseInfoDiv.$eval(".name", (div) => div.innerText);
-    const introduceText = await baseInfoDiv.$eval(
+    const introduceTextSource = await baseInfoDiv.$eval(
       ".detail_intro",
       (div) => div.innerText
-    ); // TODO max 128 char
+    );
+    const introduceText = (introduceTextSource as string).replace(
+      /\w\S*/g,
+      (w) => w.replace(/^\w/, (c) => c.toUpperCase())
+    );
+
     const detailIntroText = await baseInfoDiv.$eval(".introduce", (div) =>
       div.innerText.replace(/Details\n\n/g, "")
     ); // TODO max 1024 char
@@ -143,7 +104,7 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
     }
 
     // get twitter infomation
-    const displayTwitterName = twitterLink.split("/")[3];
+    let displayTwitterName = twitterLink.split("/")[3];
     console.log(displayTwitterName);
 
     // ecosystem
@@ -153,11 +114,18 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
       (elements) => elements.map((e) => e.textContent.trim())
     );
     if (ecosystemArray.length == 0) {
-      console.warn("无ecosystem, 考虑手动添加，跳过");
+      console.warn("无ecosystem, 考虑手动添加，已添加other");
+      ecosystem = '72: "Other"';
     } else {
       let result = "";
       for (let i = 0; i < ecosystemArray.length; i++) {
-        const chainName = ecosystemArray[i];
+        let chainName = ecosystemArray[i];
+        if (chainName === "BNB Chain") {
+          chainName = "BSC";
+        }
+        if (chainName === "Bitcoin") {
+          chainName = "BTC";
+        }
         const chainId = Object.keys(chain).find(
           (key) => chain[Number(key)] === chainName
         );
@@ -166,6 +134,10 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
       ecosystem = result.trim();
     }
 
+    // for twitter name changed
+    // if (displayTwitterName == "xNFT_Backpack") {
+    //   displayTwitterName = "Backpack";
+    // }
     const apiUrl = `https://api.apidance.pro/graphql/UserByScreenName?variables={"screen_name":"${displayTwitterName}"}`;
     const options = {
       method: "GET",
@@ -241,7 +213,7 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
       categories,
       tokenContractAddress,
       nftContractAddress: "",
-      communityNftContractAddress: "",
+      protocolContractAddresses: "",
     } as PageInfo;
   } catch (error) {
     console.error("出错了: ", error);
