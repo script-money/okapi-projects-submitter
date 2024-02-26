@@ -1,7 +1,6 @@
 export const chain: { [key: number]: string } = {
   1: "Ethereum",
   2: "BSC",
-  4: "Polygon",
   6: "Optimism",
   7: "Avalanche",
   9: "Cosmos",
@@ -83,6 +82,7 @@ export const chain: { [key: number]: string } = {
   81: "Root Network",
   82: "ZetaChain",
   59144: "Linea",
+  137: "Polygon",
   85: "BTC",
 };
 
@@ -104,6 +104,7 @@ export const category: { [key: number]: string } = {
   15: "Wallet",
   17: "DePIN",
   18: "LSD",
+  19: "AI",
 };
 
 export const categoryMapping: { [key: string]: number } = {
