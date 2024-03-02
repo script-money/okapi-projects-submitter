@@ -27,6 +27,7 @@
     "@types/json2csv": "^5.0.7",
     "json2csv": "^6.0.0-alpha.2",
     "okapi-xyz-sdk": "^0.0.1",
-    "playwright": "latest"
+    "playwright": "latest",
+    "rootdata": "^0.0.2"
   }
 }
