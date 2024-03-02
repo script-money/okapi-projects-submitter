@@ -1,6 +1,8 @@
 import { chromium, type Browser, type Page } from "playwright";
-import { category, categoryMapping, chain } from "./constant";
+import { CATEGORIES, CHAINS } from "okapi-xyz-sdk";
+
 import type { PageInfo, cmcBaseInfo, twitterBaseInfo } from "./interface";
+import { categoryMapping } from "./constant";
 
 async function fetchPageInfo(url: string): Promise<PageInfo> {
   let browser: Browser | null = null;
@@ -12,17 +14,21 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
     await page.goto(url);
 
     const detailDiv = await page.$(".detail");
-    if (!detailDiv) throw new Error("找不到 class 为 'detail' 的 div。");
+    if (!detailDiv) throw new Error("找不到 class 为 'detail' 的 div");
 
-    const baseInfoDiv = await detailDiv.$("div:nth-child(1) .base_info");
-    if (!baseInfoDiv) throw new Error("找不到 class 为 'base_info' 的 div。");
+    const baseInfoDiv = await detailDiv.$(".base_info");
+    if (!baseInfoDiv) throw new Error("找不到 class 为 'base_info' 的 div");
 
     const logoSrc = await baseInfoDiv.$eval("img.logo", (img) => img.src);
+    if (!logoSrc) throw new Error("找不到 class 为 'img.logo' 的 div");
     const nameText = await baseInfoDiv.$eval(".name", (div) => div.innerText);
+    if (!nameText) throw new Error("找不到 class 为 'name' 的 div");
     const introduceTextSource = await baseInfoDiv.$eval(
       ".detail_intro",
       (div) => div.innerText
     );
+    if (!introduceTextSource)
+      throw new Error("找不到 class 为 'detail_intro' 的 div");
     const introduceText = (introduceTextSource as string).replace(
       /\w\S*/g,
       (w) => w.replace(/^\w/, (c) => c.toUpperCase())
@@ -31,9 +37,10 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
     const detailIntroText = await baseInfoDiv.$eval(".introduce", (div) =>
       div.innerText.replace(/Details\n\n/g, "")
     ); // TODO max 1024 char
+    if (!detailIntroText) throw new Error("找不到 class 为 'introduce' 的 div");
 
     const linksDiv = await detailDiv.$("div:nth-child(1) .links");
-    if (!linksDiv) throw new Error("找不到 class 为 'links' 的 div。");
+    if (!linksDiv) throw new Error("找不到 class 为 'links' 的 div");
 
     const links = await linksDiv.$$eval("a", (links) =>
       links.map((link) => ({
@@ -86,13 +93,13 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
       for (let i = 0; i < tags.length; i++) {
         let tag = tags[i];
         if (categoryMapping[tag]) {
-          tag = category[categoryMapping[tag]];
+          tag = CATEGORIES[categoryMapping[tag]];
         } else {
           console.warn(`无法找到 ${tag} 的对应值，跳过`);
           continue;
         }
-        const tagId = Object.keys(category).find(
-          (key) => category[Number(key)] === tag
+        const tagId = Object.keys(CATEGORIES).find(
+          (key) => CATEGORIES[Number(key)] === tag
         );
         if (!added.has(Number(tagId))) {
           result += `${tagId}: "${tag}", `;
@@ -108,7 +115,7 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
     console.log(displayTwitterName);
 
     // ecosystem
-    let ecosystem = ""; // should be chain
+    let ecosystem = ""; // should be CHAINS
     const ecosystemArray = await sideBarDiv.$$eval(
       "div:nth-child(1) a span:nth-child(1)",
       (elements) => elements.map((e) => e.textContent.trim())
@@ -126,8 +133,8 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
         if (chainName === "Bitcoin") {
           chainName = "BTC";
         }
-        const chainId = Object.keys(chain).find(
-          (key) => chain[Number(key)] === chainName
+        const chainId = Object.keys(CHAINS).find(
+          (key) => CHAINS[Number(key)] === chainName
         );
         result += `${chainId}: "${chainName}", `;
       }
@@ -189,9 +196,9 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
           continue;
         }
         const tokenAddress = data.platform.token_address;
-        const chain = data.platform.slug;
+        const CHAINS = data.platform.slug;
         const symbol = data.symbol;
-        tokenContractAddress += `$${symbol}:${tokenAddress}:${chain}`;
+        tokenContractAddress += `$${symbol}:${tokenAddress}:${CHAINS}`;
       }
     } else {
       console.warn("无CMC和token, 跳过或手动添加");

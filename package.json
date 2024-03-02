@@ -1,14 +1,21 @@
 {
-  "name": "okapi-projects-wraper",
-  "module": "index.ts",
-  "type": "module",
+  "name": "okapi-projects-submitter",
+  "version": "0.0.1",
+  "description": "A tool for submit missing project for okapi.",
   "scripts": {
     "start": "bun run src/index.ts",
     "search": "bun run src/search.ts",
     "create": "bun run src/create.ts",
     "convert": "bun run src/convert.ts",
-    "test": "bunx playwright test"
+    "test": "bunx playwright test",
+    "build": "bun build src/index.ts --outdir ./dist --target node"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/script-money/okapi-projects-submitter.git"
+  },
+  "author": "script-money",
+  "license": "MIT",
   "devDependencies": {
     "@types/bun": "latest"
   },
@@ -19,6 +26,7 @@
     "@playwright/test": "^1.40.1",
     "@types/json2csv": "^5.0.7",
     "json2csv": "^6.0.0-alpha.2",
+    "okapi-xyz-sdk": "^0.0.1",
     "playwright": "latest"
   }
 }
