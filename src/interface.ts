@@ -25,6 +25,9 @@ export interface cmcBaseInfo {
       symbol: string;
     };
   };
+  status: {
+    error_message: string | null;
+  };
 }
 
 export interface PageInfo {

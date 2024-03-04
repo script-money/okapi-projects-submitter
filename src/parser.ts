@@ -1,222 +1,111 @@
-import { chromium, type Browser, type Page } from "playwright";
-import { CATEGORIES, CHAINS } from "okapi-xyz-sdk";
+import { CATEGORIES } from "okapi-xyz-sdk";
+import { projectQuery } from "rootdata";
 
 import type { PageInfo, cmcBaseInfo, twitterBaseInfo } from "./interface";
 import { categoryMapping } from "./constant";
+import { CMCMapping } from "./config";
 
-async function fetchPageInfo(url: string): Promise<PageInfo> {
-  let browser: Browser | null = null;
-  let page: Page | null = null;
-
+async function fetchPageInfo(project_id: number): Promise<PageInfo> {
   try {
-    browser = await chromium.launch();
-    page = await browser.newPage();
-    await page.goto(url);
+    const project = await projectQuery({ project_id });
+    if (!project) throw new Error(`找不到 ${project_id}`);
 
-    const detailDiv = await page.$(".detail");
-    if (!detailDiv) throw new Error("找不到 class 为 'detail' 的 div");
-
-    const baseInfoDiv = await detailDiv.$(".base_info");
-    if (!baseInfoDiv) throw new Error("找不到 class 为 'base_info' 的 div");
-
-    const logoSrc = await baseInfoDiv.$eval("img.logo", (img) => img.src);
-    if (!logoSrc) throw new Error("找不到 class 为 'img.logo' 的 div");
-    const nameText = await baseInfoDiv.$eval(".name", (div) => div.innerText);
-    if (!nameText) throw new Error("找不到 class 为 'name' 的 div");
-    const introduceTextSource = await baseInfoDiv.$eval(
-      ".detail_intro",
-      (div) => div.innerText
-    );
-    if (!introduceTextSource)
-      throw new Error("找不到 class 为 'detail_intro' 的 div");
-    const introduceText = (introduceTextSource as string).replace(
-      /\w\S*/g,
-      (w) => w.replace(/^\w/, (c) => c.toUpperCase())
+    const introduceText = (project.one_liner as string).replace(/\w\S*/g, (w) =>
+      w.replace(/^\w/, (c) => c.toUpperCase())
     );
 
-    const detailIntroText = await baseInfoDiv.$eval(".introduce", (div) =>
-      div.innerText.replace(/Details\n\n/g, "")
-    ); // TODO max 1024 char
-    if (!detailIntroText) throw new Error("找不到 class 为 'introduce' 的 div");
-
-    const linksDiv = await detailDiv.$("div:nth-child(1) .links");
-    if (!linksDiv) throw new Error("找不到 class 为 'links' 的 div");
-
-    const links = await linksDiv.$$eval("a", (links) =>
-      links.map((link) => ({
-        text: link.textContent?.trim(),
-        href: link.href,
-      }))
-    );
-
-    let officialLink = "";
-    let twitterLink = "";
+    let officialLink = project.social_media.website;
+    let twitterLink = project.social_media.X;
     let twitterLogoLink = "";
-    let discordLink = "";
-    let telegramLink = "";
-    let cmcLink = "";
-    let tokenContractAddress = "";
     let discordServerId = "";
-
-    for (let i = 0; i < links.length; i++) {
-      if (/^[^ "]+\.[^ "]+$/.test(links[i].text)) {
-        officialLink = links[i].href;
-      } else if (links[i].text === "X") {
-        twitterLink = links[i].href;
-      } else if (links[i].text === "Discord") {
-        discordLink = links[i].href;
-      } else if (links[i].text === "Telegram") {
-        telegramLink = links[i].href;
-      } else if (links[i].text === "CMC") {
-        cmcLink = links[i].href;
-      }
-    }
-
-    // side bar
-    const sideBarDiv = await page.$(".side_bar_info");
-
-    if (!sideBarDiv)
-      throw new Error("找不到 class 为 'side_bar_info' 的 div。");
-
-    // get tags
     let categories = "";
-    let added = new Set<number>();
-    const tags: string[] = await sideBarDiv.$$eval(
-      "div:nth-child(2) a",
-      (elements) => elements.map((e) => e.textContent.trim())
-    );
-    console.log(tags);
-    if (tags.length == 0) {
-      console.warn("无tags, 考虑手动添加，跳过");
+    const tags = project.tags;
+
+    if (tags.length === 0) {
+      console.warn("No tags available, consider adding manually");
     } else {
-      let result = "";
-      for (let i = 0; i < tags.length; i++) {
-        let tag = tags[i];
-        if (categoryMapping[tag]) {
-          tag = CATEGORIES[categoryMapping[tag]];
-        } else {
-          console.warn(`无法找到 ${tag} 的对应值，跳过`);
-          continue;
-        }
-        const tagId = Object.keys(CATEGORIES).find(
-          (key) => CATEGORIES[Number(key)] === tag
-        );
-        if (!added.has(Number(tagId))) {
-          result += `${tagId}: "${tag}", `;
-          console.log(`找到 ${result}`);
-          added.add(Number(tagId));
-        }
-      }
-      categories = result.trim();
+      categories = tags
+        .map((tag) => categoryMapping[tag] || tag)
+        .filter((tag) => CATEGORIES[Number(tag)])
+        .map((tag) => `${tag}: "${CATEGORIES[Number(tag)]}"`)
+        .filter((value, index, self) => self.indexOf(value) === index)
+        .join(", ");
     }
 
     // get twitter infomation
-    let displayTwitterName = twitterLink.split("/")[3];
-    console.log(displayTwitterName);
-
-    // ecosystem
-    let ecosystem = ""; // should be CHAINS
-    const ecosystemArray = await sideBarDiv.$$eval(
-      "div:nth-child(1) a span:nth-child(1)",
-      (elements) => elements.map((e) => e.textContent.trim())
-    );
-    if (ecosystemArray.length == 0) {
-      console.warn("无ecosystem, 考虑手动添加，已添加other");
-      ecosystem = '72: "Other"';
-    } else {
-      let result = "";
-      for (let i = 0; i < ecosystemArray.length; i++) {
-        let chainName = ecosystemArray[i];
-        if (chainName === "BNB Chain") {
-          chainName = "BSC";
-        }
-        if (chainName === "Bitcoin") {
-          chainName = "BTC";
-        }
-        const chainId = Object.keys(CHAINS).find(
-          (key) => CHAINS[Number(key)] === chainName
-        );
-        result += `${chainId}: "${chainName}", `;
+    if (twitterLink) {
+      const displayTwitterName = twitterLink.split("/").pop();
+      if (!process.env.APIDANCE_KEY) {
+        throw new Error("APIDANCE_KEY not found");
       }
-      ecosystem = result.trim();
+      const apiUrl = `https://api.apidance.pro/graphql/UserByScreenName?variables={"screen_name":"${displayTwitterName}"}`;
+      const options = {
+        method: "GET",
+        headers: {
+          apikey: process.env.APIDANCE_KEY,
+        },
+      };
+      const res = await fetch(apiUrl, options);
+      const resJson = (await res.json()) as twitterBaseInfo;
+      twitterLogoLink = resJson.data.user.result.legacy.profile_image_url_https;
     }
 
-    // for twitter name changed
-    // if (displayTwitterName == "xNFT_Backpack") {
-    //   displayTwitterName = "Backpack";
-    // }
-    const apiUrl = `https://api.apidance.pro/graphql/UserByScreenName?variables={"screen_name":"${displayTwitterName}"}`;
-    const options = {
-      method: "GET",
-      headers: {
-        apikey: process.env.APIDANCE_KEY as string,
-      },
-    };
-    const res = await fetch(apiUrl, options);
-    const resJson = await res.json();
-    twitterLogoLink = (resJson as twitterBaseInfo).data.user.result.legacy
-      .profile_image_url_https;
-
     // get discord server id
-    try {
-      await page.goto(discordLink);
-      const metaContent = await page.$eval(
-        'meta[property="og:image"]',
-        (element) => element.getAttribute("content")
-      );
-      discordServerId = metaContent.split("/")[4];
-    } catch (error) {
-      console.error("discord server id 获取失败, 跳过");
-      discordServerId = "";
+    const discordLink = project.social_media.discord || "";
+    if (discordLink && discordLink != "") {
+      try {
+        const response = await fetch(discordLink);
+        const html = await response.text();
+        const regex = /<meta property="og:image" content="([^"]+)"\/>/;
+        const match = html.match(regex);
+        if (match && match[1]) {
+          discordServerId = match[1].split("/")[4];
+        }
+      } catch (error) {
+        console.warn("Fetching Discord page failed", error);
+      }
     }
 
     // get token address
-    if (cmcLink != "") {
-      const slug = cmcLink.split("/")[4];
+    let tokenContractAddress = "";
+    const tokenSymbol = project.token_symbol;
+    if (!process.env.CMC_KEY) {
+      throw new Error("CMC_KEY not found");
+    }
+    if (tokenSymbol && tokenSymbol != "") {
+      const slug = CMCMapping[tokenSymbol.toLowerCase()];
       const cmcApi = `https://pro-api.coinmarketcap.com/v2/cryptocurrency/info?slug=${slug}`;
       const cmcOptions = {
         method: "GET",
         headers: {
-          "X-CMC_PRO_API_KEY": process.env.CMC_KEY as string,
+          "X-CMC_PRO_API_KEY": process.env.CMC_KEY,
         },
       };
       const cmcRes = await fetch(cmcApi, cmcOptions);
-      const resJson = (await cmcRes.json()) as cmcBaseInfo;
-      const keys = Object.keys(resJson.data);
+      let resJson = (await cmcRes.json()) as cmcBaseInfo;
 
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        const data = resJson.data[key];
-        if (
-          data == null ||
-          data.platform == null ||
-          data.platform.token_address == null
-        ) {
-          // TODO: failed parse CMC for https://www.rootdata.com/Projects/detail/Cardano?k=NTA%3D
-          continue;
-        }
-        const tokenAddress = data.platform.token_address;
-        const CHAINS = data.platform.slug;
-        const symbol = data.symbol;
-        tokenContractAddress += `$${symbol}:${tokenAddress}:${CHAINS}`;
+      if (resJson.status.error_message == null && resJson.data) {
+        tokenContractAddress = Object.values(resJson.data)
+          .filter((data) => data?.platform?.token_address)
+          .map(
+            (data) =>
+              `$${data.symbol}:${data.platform.token_address}:${data.platform.slug}`
+          )
+          .join(", ");
       }
-    } else {
-      console.warn("无CMC和token, 跳过或手动添加");
     }
 
     return {
-      logoSrc,
-      nameText,
-      detailIntroText,
+      nameText: project.project_name,
+      detailIntroText: project.description,
       introduceText,
       officialLink,
       twitterLink,
       twitterLogoLink,
       discordLink,
       discordServerId,
-      telegramLink,
-      cmcLink,
-      ecosystem,
+      telegramLink: "",
+      ecosystem: project.ecosystem || "",
       categories,
       tokenContractAddress,
       nftContractAddress: "",
@@ -225,13 +114,6 @@ async function fetchPageInfo(url: string): Promise<PageInfo> {
   } catch (error) {
     console.error("出错了: ", error);
     throw error;
-  } finally {
-    if (page) {
-      await page.close();
-    }
-    if (browser) {
-      await browser.close();
-    }
   }
 }
 
